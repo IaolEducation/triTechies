@@ -1,26 +1,62 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-50: #fcfefd;
+  --color-brand-100: #fbfdfd;
+  --color-brand-200: #f1f6fd;
+  --color-brand-300: #e8f0f6;
+  --color-brand-400: #e5effb;
+  --color-brand-500: #d7e7f6;
+  --color-brand-600: #b5daf5;
+  --color-accent-light: #6fa5d3;
+  --color-accent-dark: #18538c;
+
+  --color-background-primary: var(--background);
+  --color-foreground-primary: var(--foreground);
+
+  --font-sans: "Inter", var(--font-inter);
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #0b1120;
+  --foreground: #f8fafc;
+  --color-brand-50: #0f172a;
+  --color-brand-100: #1e293b;
+  --color-brand-200: #334155;
+  --color-brand-300: #475569;
+  --color-brand-400: #64748b;
+  --color-brand-500: #94a3b8;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  transition: background-color 0.5s ease-in-out;
+}
+
+/* Custom utilities */
+@utility glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+@utility text-gradient {
+  background: linear-gradient(to right, var(--color-accent-dark), var(--color-accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility bg-gradient-brand {
+  background: linear-gradient(to bottom right, var(--color-brand-50), var(--color-brand-400));
 }
