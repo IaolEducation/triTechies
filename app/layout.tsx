@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={cn(inter.variable, "antialiased overflow-x-hidden flex flex-col min-h-screen bg-background text-foreground pb-20 md:pb-0")}>
+      <body className={cn(inter.variable, "antialiased overflow-x-hidden flex flex-col min-h-screen bg-background text-foreground")}>
         <Navbar />
         <main className="flex-1">{children}</main>
         <FirstVisitPopup />

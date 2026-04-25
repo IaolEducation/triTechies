@@ -30,7 +30,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  if (pathname.startsWith("/admin")) {
+  if (pathname.startsWith("/admintriTechies2026")) {
     return null;
   }
 
