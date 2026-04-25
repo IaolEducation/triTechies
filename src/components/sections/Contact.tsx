@@ -14,7 +14,7 @@ export function Contact() {
     e.preventDefault();
     setLoading(true);
     setSuccess(false);
-    
+
     const formData = new FormData(e.currentTarget);
     const data = {
       name: formData.get("name"),
@@ -42,7 +42,7 @@ export function Contact() {
   return (
     <section className="py-24 px-6 w-full text-foreground-primary dark:text-white flex flex-col items-center relative overflow-hidden transition-colors duration-500">
       <div className="absolute top-0 right-[-10%] w-[50vw] h-[50vw] rounded-full bg-accent-light blur-[100px] opacity-20 pointer-events-none" />
-      
+
       <div className="max-w-5xl mx-auto relative z-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div className="flex flex-col justify-center">
           <FadeIn>
@@ -58,27 +58,27 @@ export function Contact() {
 
           <FadeIn delay={0.1}>
             <div className="relative pl-6 md:pl-8 border-l-4 border-accent-dark/30 mb-10">
-               <p className="text-xl md:text-2xl text-slate-800 dark:text-white font-bold leading-tight mb-2">
-                 We engage directly with your exact technical hurdles.
-               </p>
-               <p className="text-md text-slate-600 dark:text-slate-400 font-medium">
-                 Send us your budget, operational timeline, and a raw description of the core problem. We’ll immediately begin architecting the exact engine required to automate the solution.
-               </p>
+              <p className="text-xl md:text-2xl text-slate-800 dark:text-white font-bold leading-tight mb-2">
+                We engage directly with your exact technical hurdles.
+              </p>
+              <p className="text-md text-slate-600 dark:text-slate-400 font-medium">
+                Send us your budget, operational timeline, and a raw description of the core problem. We’ll immediately begin architecting the exact engine required to automate the solution.
+              </p>
             </div>
           </FadeIn>
-          
+
           <FadeIn delay={0.2}>
-             <div className="flex items-center gap-5 p-5 bg-white/40 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-3xl backdrop-blur-md shadow-lg max-w-sm transition-all hover:-translate-y-1">
-                <div className="w-14 h-14 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm text-accent-dark dark:text-accent-light">
-                    <Mail className="w-6 h-6" />
-                </div>
-                <div>
-                   <p className="font-bold text-slate-800 dark:text-white text-sm tracking-widest uppercase mb-1">Direct Comms Channel</p>
-                   <a href="mailto:hello@tritechies.com" className="text-accent-dark dark:text-accent-light font-bold border-b border-accent-dark/30 hover:border-accent-dark transition-colors inline-block text-lg">
-                      hello@tritechies.com
-                   </a>
-                </div>
-             </div>
+            <div className="flex items-center gap-5 p-5 bg-white/40 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-3xl backdrop-blur-md shadow-lg max-w-sm transition-all hover:-translate-y-1">
+              <div className="w-14 h-14 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm text-accent-dark dark:text-accent-light">
+                <Mail className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="font-bold text-slate-800 dark:text-white text-sm tracking-widest uppercase mb-1">Direct Comms Channel</p>
+                <a href="mailto:techiestri@gmail.com" className="text-accent-dark dark:text-accent-light font-bold border-b border-accent-dark/30 hover:border-accent-dark transition-colors inline-block text-lg">
+                  techiestri@gmail.com
+                </a>
+              </div>
+            </div>
           </FadeIn>
         </div>
 
