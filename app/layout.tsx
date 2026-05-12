@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/ui/Navbar";
 import { FirstVisitPopup } from "@/components/ui/FirstVisitPopup";
+import Script from "next/script";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -39,6 +40,15 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1">{children}</main>
         <FirstVisitPopup />
+        <Script 
+          src="https://app.ashna.ai/embed/agent-widget.js" 
+          data-agent-id="6a0382db667fcb04605f22d7" 
+          data-token="eyJhbGciOiJIUzI1NiJ9.eyJhZ2VudElkIjoiNmEwMzgyZGI2NjdmY2IwNDYwNWYyMmQ3IiwidXNlcklkIjoiNjdkMDdkOWJkNzAxN2MyZWJlODRhOTZjIiwiYWxsb3dlZE9yaWdpbnMiOlsidHJpdGVjaGllcy52ZXJjZWwuYXBwIl0sIm9yaWdpbkRvbWFpbiI6InRyaXRlY2hpZXMudmVyY2VsLmFwcCIsImFzc2lnbmVkT3JnSWQiOiIiLCJpYXQiOjE3Nzg2MTUwODYsImlzcyI6ImFzaG5hQUkiLCJhdWQiOiJhc2huYUFJIiwic3ViIjoiNmEwMzgyZGI2NjdmY2IwNDYwNWYyMmQ3In0.IHZlWnN1GAihhxlXfNfHuPc9D1sJlIOSKmZFIAldncs" 
+          data-icon-color="#0b0740" 
+          data-icon-shape="circle" 
+          data-icon-style="message-circle" 
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
