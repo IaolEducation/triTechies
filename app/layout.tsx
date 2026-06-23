@@ -11,14 +11,59 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tritechies.com";
+const cleanSiteUrl = SITE_URL.endsWith("/") ? SITE_URL.slice(0, -1) : SITE_URL;
+
 export const metadata: Metadata = {
-  title: "triTechies | We build for results",
-  description: "We solve real business problems. Custom systems, web apps, mobile apps, and beautiful websites.",
+  metadataBase: new URL(cleanSiteUrl),
+  title: {
+    default: "triTechies | We build for results",
+    template: "%s | triTechies",
+  },
+  description: "We solve real business problems with custom digital systems, dynamic web applications, mobile apps, and beautiful websites built for measurable results.",
+  keywords: [
+    "triTechies",
+    "software engineering",
+    "web development agency",
+    "mobile app development",
+    "custom software",
+    "business systems automation",
+    "premium digital products",
+    "next.js developer",
+  ],
   manifest: "/manifest.json",
+  alternates: {
+    canonical: "./",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "triTechies",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "./",
+    title: "triTechies | We build for results",
+    description: "We solve real business problems with custom digital systems, dynamic web applications, mobile apps, and beautiful websites built for measurable results.",
+    siteName: "triTechies",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 1200,
+        alt: "triTechies - We build for results",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "triTechies | We build for results",
+    description: "We solve real business problems with custom digital systems, dynamic web applications, mobile apps, and beautiful websites built for measurable results.",
+    images: ["/og-image.png"],
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
 };
 

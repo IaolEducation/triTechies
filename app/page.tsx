@@ -5,9 +5,14 @@ import { Approach } from "@/components/sections/Approach";
 import { Team } from "@/components/sections/Team";
 import { Footer } from "@/components/ui/Footer";
 
-export const metadata = {
-  title: "triTechies | Home",
-  description: "We build for results.",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Custom Software & Web App Development Studio",
+  description: "triTechies is a software engineering and development studio building result-driven custom platforms, web applications, mobile apps, and robust business systems.",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function Home() {
