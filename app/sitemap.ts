@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tritechies.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.tritechies.com";
 const cleanSiteUrl = SITE_URL.endsWith("/") ? SITE_URL.slice(0, -1) : SITE_URL;
 
 const STATIC_ROUTES = [
