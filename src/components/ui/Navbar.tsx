@@ -4,115 +4,98 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // If we scroll down past 50px, hide. If we scroll up, show.
-      if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
 
   if (pathname.startsWith("/admintriTechies2026")) {
     return null;
   }
 
   const links = [
-    { href: "/about", label: "ABOUT US" },
     { href: "/services", label: "SERVICES" },
-    { href: "/work", label: "OUR WORK" },
+    { href: "/work", label: "PORTFOLIO" },
+    { href: "/about", label: "PROCESS" },
   ];
 
   return (
-    <>
-      {/* Floating Glassmorphic Pill */}
-      <div 
-        className={cn(
-          "fixed top-4 left-0 right-0 z-50 flex justify-center px-4 transition-transform duration-500 pointer-events-none",
-          isVisible ? "translate-y-0" : "-translate-y-[150%]"
-        )}
-      >
-        <nav className="pointer-events-auto flex items-center justify-between px-6 py-3.5 rounded-full bg-[#05070f]/95 bg-[radial-gradient(circle_at_72%_80%,rgba(139,92,246,0.20),transparent_35%),radial-gradient(circle_at_28%_20%,rgba(59,130,246,0.16),transparent_34%)] backdrop-blur-xl border border-white/10 shadow-2xl w-full max-w-5xl transition-all duration-300">
-          
-          <Link href="/" className="text-xl font-black text-white tracking-tighter hover:opacity-80 transition-opacity">
-            <span className="text-accent-light">tri</span>Techies.
-          </Link>
+    <header className="sticky top-0 z-50 w-full bg-obsidian-canvas/95 backdrop-blur-sm border-b border-onyx-edge">
+      <div className="mx-auto max-w-[1200px]">
+        <div className="px-6 py-4 flex items-center justify-between">
+          {/* Left: Wordmark + divider + nav links */}
+          <div className="flex items-center gap-5">
+            <Link href="/" className="text-[21px] font-aeonik font-normal text-frost-text tracking-[-0.011em] hover:opacity-80 transition-opacity">
+              triTechies
+            </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:block w-px h-5 bg-silver" />
+
+            <nav className="hidden md:flex items-center gap-5">
+              {links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "text-[13px] font-aeonik font-bold uppercase tracking-[-0.011em] transition-colors",
+                    pathname === link.href ? "text-frost-text" : "text-smoke hover:text-frost-text"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Right: Chat pill CTA */}
+          <div className="hidden md:flex items-center">
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-pure-white text-obsidian-canvas text-[13px] font-aeonik font-bold uppercase tracking-[-0.011em] hover:opacity-90 transition-opacity"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" className="w-5 h-5"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" d="M20 2H2v20h2V4h16v12H6v2H4v2h2v-2h16V2z"/></svg>
+              LET&apos;S CHAT
+            </Link>
+          </div>
+
+          {/* Mobile menu toggle */}
+          <button
+            className="md:hidden text-frost-text"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Mobile nav dropdown — flows directly under the bar */}
+        {isOpen && (
+          <div className="md:hidden border-t border-onyx-edge px-6 py-6 flex flex-col gap-1">
             {links.map((link) => (
-              <Link 
-                key={link.href} 
+              <Link
+                key={link.href}
                 href={link.href}
+                onClick={() => setIsOpen(false)}
                 className={cn(
-                  "text-xs font-bold tracking-widest transition-colors",
-                  pathname === link.href ? "text-white" : "text-slate-400 hover:text-white"
+                  "text-[13px] font-aeonik font-bold uppercase tracking-[-0.011em] py-3 border-b border-onyx-edge",
+                  pathname === link.href ? "text-frost-text" : "text-smoke"
                 )}
               >
                 {link.label}
               </Link>
             ))}
-            <Link 
-              href="/contact" 
-              className="px-6 py-2.5 rounded-full bg-accent-light text-slate-900 text-sm font-bold hover:bg-white hover:scale-105 transition-all shadow-lg"
+            <Link
+              href="/contact"
+              onClick={() => setIsOpen(false)}
+              className="mt-4 inline-flex items-center justify-center gap-2 px-5 py-3 bg-pure-white text-obsidian-canvas text-[13px] font-aeonik font-bold uppercase tracking-[-0.011em]"
             >
-              Start Project
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" className="w-5 h-5"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" d="M20 2H2v20h2V4h16v12H6v2H4v2h2v-2h16V2z"/></svg>
+              LET&apos;S CHAT
             </Link>
           </div>
-
-          {/* Mobile Menu Toggle */}
-          <button 
-            className="md:hidden text-white"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-
-        </nav>
+        )}
       </div>
-
-      {/* Mobile Nav Dropdown */}
-      {isOpen && (
-        <div className="md:hidden fixed top-24 left-4 right-4 z-40 rounded-3xl bg-[#05070f]/95 bg-[radial-gradient(circle_at_72%_80%,rgba(139,92,246,0.20),transparent_35%),radial-gradient(circle_at_28%_20%,rgba(59,130,246,0.16),transparent_34%)] backdrop-blur-xl border border-white/10 px-6 py-6 flex flex-col gap-4 shadow-2xl">
-          {links.map((link) => (
-            <Link 
-              key={link.href} 
-              href={link.href}
-              onClick={() => setIsOpen(false)}
-              className={cn(
-                "text-sm font-bold tracking-widest py-3 border-b border-white/5",
-                pathname === link.href ? "text-accent-light" : "text-white"
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <Link 
-            href="/contact" 
-            onClick={() => setIsOpen(false)}
-            className="mt-4 text-center px-6 py-3.5 rounded-full bg-accent-light text-slate-900 text-sm font-bold shadow-lg"
-          >
-            Start Project
-          </Link>
-        </div>
-      )}
-    </>
+    </header>
   );
 }

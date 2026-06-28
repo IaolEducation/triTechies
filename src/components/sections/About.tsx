@@ -1,54 +1,58 @@
 "use client";
 
 import { FadeIn } from "@/components/animations/FadeIn";
-import { ArrowRight, Phone } from "lucide-react";
 
 export function About() {
   return (
-    <section className="pt-36 md:pt-40 pb-24 md:pb-28 px-6 w-full relative overflow-hidden transition-colors duration-500">
-      {/* Futuristic Background Accents */}
-      <div className="absolute top-[20%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-brand-200 blur-[150px] opacity-[0.15] mix-blend-screen pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-accent-dark blur-[150px] opacity-[0.1] mix-blend-screen pointer-events-none" />
-      
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-center">
+    <section className="pt-40 pb-32 px-6 w-full bg-obsidian-canvas">
+      <div className="max-w-[1200px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           
-          <div className="lg:col-span-5 relative">
+          <div className="lg:col-span-5">
             <FadeIn>
-              <div className="inline-flex items-center rounded-full border border-accent-light/45 bg-slate-900/90 px-5 py-2 text-sm font-semibold text-accent-light mb-8 shadow-lg shadow-black/30">
-                ⚡ THE VISION
-              </div>
-              <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9] mb-8">
-                Build <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-dark to-accent-light">Systems.</span><br />
+              <h2 className="text-[44px] md:text-[63px] font-aeonik font-normal text-frost-text tracking-[-0.69px] leading-[0.95] mb-8">
+                Build<br />
+                Systems.<br />
                 Not Pages.
               </h2>
             </FadeIn>
           </div>
 
-          <div className="lg:col-span-7 flex flex-col gap-8">
+          <div className="lg:col-span-7 flex flex-col gap-10">
             <FadeIn delay={0.2}>
-              <div className="relative pl-8 md:pl-12 border-l-2 border-accent-light/40">
-                <h3 className="text-2xl md:text-4xl font-bold mb-4 text-white leading-tight">
-                  Technology should make your life <span className="text-accent-dark">easier</span> — not more complicated.
+              <div className="pl-8 md:pl-12 border-l border-onyx-edge">
+                <h3 className="text-[23px] md:text-[34px] font-aeonik font-normal mb-4 text-frost-text leading-[1.11] tracking-[-0.011em]">
+                  Technology should make your life easier — not more complicated.
                 </h3>
-                <p className="text-lg md:text-xl text-slate-300 font-medium leading-relaxed">
-                  We don’t chase fleeting digital trends or build pretty pages that do nothing. We architect raw, high-performance engines that automate growth, secure data, and actively solve real-world problems.
+                <p className="text-[16px] font-aeonik font-normal text-smoke leading-[1.5]">
+                  We don&apos;t chase fleeting digital trends or build pretty pages that do nothing. We architect raw, high-performance engines that automate growth, secure data, and actively solve real-world problems.
                 </p>
               </div>
             </FadeIn>
             
             <FadeIn delay={0.3}>
-              <div className="grid grid-cols-2 gap-6 mt-4">
-                <div className="bg-[#05070f]/95 p-6 rounded-3xl border border-white/10 shadow-xl">
-                   <div className="text-3xl font-black text-accent-dark mb-2">01</div>
-                   <h4 className="text-lg font-bold text-white mb-2">Automate Reality</h4>
-                   <p className="text-sm text-slate-300 font-medium">Replace manual labor with flawless automated pipelines.</p>
+              <div className="grid grid-cols-2 gap-px bg-onyx-edge">
+                <div className="bg-obsidian-canvas p-8">
+                  <div className="text-[34px] font-aeonik font-normal text-amber-whisper tracking-[-0.011em] mb-3">
+                    01
+                  </div>
+                  <h4 className="text-[16px] font-aeonik font-normal text-frost-text tracking-[-0.011em] mb-2">
+                    Automate Reality
+                  </h4>
+                  <p className="text-[14px] font-aeonik font-normal text-smoke leading-[1.43]">
+                    Replace manual labor with flawless automated pipelines.
+                  </p>
                 </div>
-                <div className="bg-[#05070f]/95 p-6 rounded-3xl border border-white/10 shadow-xl">
-                   <div className="text-3xl font-black text-accent-dark mb-2">02</div>
-                   <h4 className="text-lg font-bold text-white mb-2">Scale Infinitely</h4>
-                   <p className="text-sm text-slate-300 font-medium">Architectures designed to never bottleneck your traffic.</p>
+                <div className="bg-obsidian-canvas p-8">
+                  <div className="text-[34px] font-aeonik font-normal text-amber-whisper tracking-[-0.011em] mb-3">
+                    02
+                  </div>
+                  <h4 className="text-[16px] font-aeonik font-normal text-frost-text tracking-[-0.011em] mb-2">
+                    Scale Infinitely
+                  </h4>
+                  <p className="text-[14px] font-aeonik font-normal text-smoke leading-[1.43]">
+                    Architectures designed to never bottleneck your traffic.
+                  </p>
                 </div>
               </div>
             </FadeIn>
@@ -62,34 +66,28 @@ export function About() {
 
 export function Contact() {
   return (
-    <section className="py-24 px-6 w-full text-foreground-primary dark:text-white flex flex-col items-center text-center relative overflow-hidden transition-colors duration-500">
-      <div className="absolute top-[-50%] left-[-10%] w-[100vw] h-[100vw] rounded-full bg-accent-dark blur-3xl opacity-30 mix-blend-multiply" />
-      
-      <div className="max-w-3xl mx-auto relative z-10">
+    <section className="py-[5rem] px-6 w-full bg-obsidian-canvas flex flex-col items-center text-center">
+      <div className="max-w-[680px] mx-auto">
         <FadeIn>
-          <div className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white mb-8 glass">
-            <Phone className="w-4 h-4 mr-2" />
-            CONTACT US
-          </div>
-        </FadeIn>
-
-        <FadeIn delay={0.1}>
-          <h2 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
-            Your system doesn’t need <br className="hidden md:block"/> to stay broken.
+          <h2 className="text-[34px] md:text-[44px] font-aeonik font-normal text-frost-text tracking-[-0.48px] leading-[1.05] mb-6">
+            Your system doesn&apos;t need to stay broken.
           </h2>
         </FadeIn>
 
-        <FadeIn delay={0.2}>
-          <p className="text-xl text-brand-100 mb-12 font-medium">
-            Tell us your problem. We’ll design the solution.
+        <FadeIn delay={0.1}>
+          <p className="text-[16px] font-aeonik font-normal text-smoke mb-12 leading-[1.5]">
+            Tell us your problem. We&apos;ll design the solution.
           </p>
         </FadeIn>
 
-        <FadeIn delay={0.3}>
-          <button className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-white px-10 py-5 font-bold text-accent-dark transition-all hover:bg-brand-50 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-background">
-            <span className="mr-2 text-lg">Start Your Project</span>
-            <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
-          </button>
+        <FadeIn delay={0.2}>
+          <a
+            href="/contact"
+            className="group inline-flex items-center justify-center px-5 py-2.5 border border-silver bg-transparent text-frost-text text-[14px] font-aeonik font-bold uppercase tracking-[-0.011em] hover:bg-white/5 transition-colors"
+          >
+            <span className="mr-2">START PROJECT</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
         </FadeIn>
       </div>
     </section>
