@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/ui/Navbar";
 import { FirstVisitPopup } from "@/components/ui/FirstVisitPopup";
+import { IOSScrollFix } from "@/components/ui/IOSScrollFix";
 import Script from "next/script";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -83,7 +84,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("dark", "font-sans", geist.variable)} suppressHydrationWarning>
-      <body className={cn(inter.variable, "antialiased overflow-hidden h-screen flex flex-col bg-obsidian-canvas text-frost-text font-aeonik")}>
+      <body className={cn(inter.variable, "antialiased overflow-hidden h-dvh flex flex-col bg-obsidian-canvas text-frost-text font-aeonik")}>
+        <IOSScrollFix />
         <Navbar />
         <main className="flex-1 overflow-y-auto scroll-smooth overscroll-y-none">{children}</main>
         <FirstVisitPopup />

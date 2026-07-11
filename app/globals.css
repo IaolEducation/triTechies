@@ -206,6 +206,23 @@ body {
   overscroll-behavior-y: none;
 }
 
+main {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS Safari Specific Layout Fix */
+.is-ios,
+.is-ios body {
+  overflow: auto !important;
+  height: auto !important;
+}
+
+.is-ios main {
+  overflow: visible !important;
+  height: auto !important;
+  flex: none !important;
+}
+
 body {
   background-color: var(--background);
   background-image: none;
