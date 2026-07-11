@@ -62,7 +62,7 @@ export function Team() {
               <button
                 type="button"
                 onClick={() => setSelectedMember(member)}
-                className="group flex flex-col p-8 h-full w-full text-left border-b border-r border-onyx-edge transition-colors hover:bg-[#161616]"
+                className="group flex flex-col p-6 sm:p-8 h-full w-full text-left border-b border-r border-onyx-edge transition-colors hover:bg-[#161616]"
               >
                 <div className="mb-5 flex items-start justify-between gap-4">
                   <div className="min-w-0">
@@ -73,11 +73,11 @@ export function Team() {
                       {member.role}
                     </p>
                   </div>
-                  <div className="h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 shrink-0 overflow-hidden rounded-full border border-onyx-edge bg-charcoal-surface shadow-lg shadow-black/40">
+                  <div className="h-28 w-28 sm:h-28 sm:w-28 lg:h-32 lg:w-32 shrink-0 overflow-hidden rounded-full border border-onyx-edge bg-charcoal-surface shadow-lg shadow-black/40">
                     <img
                       src={member.imageUrl}
                       alt={member.name}
-                      className="h-full w-full object-cover grayscale"
+                      className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
                     />
                   </div>
                 </div>

@@ -4,7 +4,7 @@ import { FadeIn } from "@/components/animations/FadeIn";
 
 export function About() {
   return (
-    <section className="pt-40 pb-32 px-6 w-full bg-obsidian-canvas">
+    <section className="py-[5rem] px-6 w-full bg-obsidian-canvas">
       <div className="max-w-[1200px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           

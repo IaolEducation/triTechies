@@ -201,6 +201,11 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+html,
+body {
+  overscroll-behavior-y: none;
+}
+
 body {
   background-color: var(--background);
   background-image: none;

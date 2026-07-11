@@ -83,15 +83,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("dark", "font-sans", geist.variable)} suppressHydrationWarning>
-      <body className={cn(inter.variable, "antialiased overflow-x-hidden flex flex-col min-h-screen bg-obsidian-canvas text-frost-text font-aeonik")}>
+      <body className={cn(inter.variable, "antialiased overflow-hidden h-screen flex flex-col bg-obsidian-canvas text-frost-text font-aeonik")}>
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 overflow-y-auto scroll-smooth overscroll-y-none">{children}</main>
         <FirstVisitPopup />
         <Script 
           src="https://app.ashna.ai/embed/agent-widget.js" 
           data-agent-id="6a0382db667fcb04605f22d7" 
-          data-token="eyJhbGciOiJIUzI1NiJ9.eyJhZ2VudElkIjoiNmEwMzgyZGI2NjdmY2IwNDYwNWYyMmQ3IiwidXNlcklkIjoiNjdkMDdkOWJkNzAxN2MyZWJlODRhOTZjIiwiYWxsb3dlZE9yaWdpbnMiOlsidHJpdGVjaGllcy52ZXJjZWwuYXBwIl0sIm9yaWdpbkRvbWFpbiI6InRyaXRlY2hpZXMudmVyY2VsLmFwcCIsImFzc2lnbmVkT3JnSWQiOiIiLCJpYXQiOjE3Nzg2MTUwODYsImlzcyI6ImFzaG5hQUkiLCJhdWQiOiJhc2huYUFJIiwic3ViIjoiNmEwMzgyZGI2NjdmY2IwNDYwNWYyMmQ3In0.IHZlWnN1GAihhxlXfNfHuPc9D1sJlIOSKmZFIAldncs" 
-          data-icon-color="#101010" 
+          data-token="eyJhbGciOiJIUzI1NiJ9.eyJhZ2VudElkIjoiNmEwMzgyZGI2NjdmY2IwNDYwNWYyMmQ3IiwidXNlcklkIjoiNjdkMDdkOWJkNzAxN2MyZWJlODRhOTZjIiwiYWxsb3dlZE9yaWdpbnMiOlsid3d3LnRyaXRlY2hpZXMuY29tIl0sIm9yaWdpbkRvbWFpbiI6Ind3dy50cml0ZWNoaWVzLmNvbSIsImFzc2lnbmVkT3JnSWQiOiIiLCJpYXQiOjE3ODM3NjI1NjIsImlzcyI6ImFzaG5hQUkiLCJhdWQiOiJhc2huYUFJIiwic3ViIjoiNmEwMzgyZGI2NjdmY2IwNDYwNWYyMmQ3In0.KUyAGXU1kMt5dBtXM3aP1lxNYy95uCn2fzvYfEHIijs" 
+          data-icon-color="#25222b" 
           data-icon-shape="circle" 
           data-icon-style="message-circle" 
           strategy="afterInteractive"

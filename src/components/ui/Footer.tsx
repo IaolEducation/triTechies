@@ -53,17 +53,17 @@ export function Footer() {
 
         <div className="border-t border-onyx-edge pt-8">
           <FadeIn delay={0.1} direction="up" className="w-full">
-            <h1 className="text-[15vw] md:text-[12vw] leading-none font-aeonik font-normal text-frost-text/95 tracking-[-0.011em] select-none w-full whitespace-nowrap overflow-hidden">
-              triTechies.
+            <h1 className="text-[15vw] md:text-[14vw] xl:text-[180px] leading-none font-sans font-bold text-frost-text/95 tracking-[-0.02em] select-none w-full whitespace-nowrap overflow-hidden">
+              triTechies<span className="inline-block bg-current h-[0.16em] w-[0.16em] ml-[0.02em] align-baseline" style={{ borderRadius: "50%" }} />
             </h1>
           </FadeIn>
         </div>
 
-        <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <p className="text-[13px] font-input font-normal text-graphite tracking-[-0.037em]">
+        <div className="mt-3 flex flex-row items-center justify-between gap-2">
+          <p className="text-[9px] min-[375px]:text-[10px] sm:text-[13px] font-input font-normal text-graphite tracking-[-0.037em]">
             © {new Date().getFullYear()} triTechies. All rights reserved.
           </p>
-          <p className="text-[13px] font-input font-normal text-graphite tracking-[-0.037em]">
+          <p className="text-[9px] min-[375px]:text-[10px] sm:text-[13px] font-input font-normal text-graphite tracking-[-0.037em] shrink-0">
             Built for results.
           </p>
         </div>

@@ -68,7 +68,19 @@ export function Services() {
                 {React.createElement(
                   service.href ? "a" : "div",
                   {
-                    ...(service.href ? { href: service.href } : {}),
+                    ...(service.href
+                      ? {
+                          href: service.href,
+                          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
+                            e.preventDefault();
+                            const id = service.href?.replace("#", "");
+                            const element = document.getElementById(id || "");
+                            if (element) {
+                              element.scrollIntoView({ behavior: "smooth" });
+                            }
+                          },
+                        }
+                      : {}),
                     className:
                       "group relative block p-10 h-full border-b border-r border-onyx-edge transition-colors hover:bg-[#161616]",
                   },

@@ -7,8 +7,8 @@ import Image from "next/image";
 
 export function Hero() {
   return (
-    <section className="relative w-full flex flex-col items-center justify-center pt-20 pb-10 px-6 overflow-hidden bg-obsidian-canvas">
-      <div className="relative z-10 max-w-[900px] mx-auto text-center flex flex-col items-center">
+    <section className="relative w-full flex flex-col items-center justify-center pt-20 pb-10 overflow-hidden bg-obsidian-canvas">
+      <div className="relative z-10 max-w-[900px] w-full mx-auto px-6 text-center flex flex-col items-center">
         <FadeIn delay={0.1}>
           <div className="flex items-center gap-2 mb-[3em]">
             <span className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
@@ -46,18 +46,18 @@ export function Hero() {
             <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Link>
         </FadeIn>
-
-        <FadeIn delay={0.5} className="w-full max-w-[1000px]">
-          <Image
-            src="/dot-matrix-1782574388927.svg"
-            alt="Global reach dot matrix map"
-            width={1920}
-            height={1080}
-            className="w-full h-auto opacity-60 -mt-[4em] mx-auto"
-            priority
-          />
-        </FadeIn>
       </div>
+
+      <FadeIn delay={0.5} className="w-full">
+        <Image
+          src="/dot-matrix-1782574388927.svg"
+          alt="Global reach dot matrix map"
+          width={1920}
+          height={1080}
+          className="w-full h-auto opacity-60 -mt-[12%] mx-auto"
+          priority
+        />
+      </FadeIn>
     </section>
   );
 }
