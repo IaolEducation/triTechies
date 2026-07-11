@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { FadeIn } from "@/components/animations/FadeIn";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { LiveProjectCard } from "@/components/ui/LiveProjectCard";
+import { ArrowRight } from "lucide-react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -32,7 +34,6 @@ export function Work({ limit = 6 }: { limit?: number | null }) {
         if (fetchedProjects.length > 0) {
           setProjects(fetchedProjects);
         } else {
-          // Fallback static data if Firebase is empty/unconfigured
           setProjects([
             {
               id: "1",
@@ -50,7 +51,7 @@ export function Work({ limit = 6 }: { limit?: number | null }) {
             }
           ]);
         }
-      } catch (e) {
+      } catch {
         console.error("Firebase not configured or no connection, using fallback.");
         setProjects([
           {
@@ -79,46 +80,44 @@ export function Work({ limit = 6 }: { limit?: number | null }) {
   const displayedProjects = limit ? projects.slice(0, limit) : projects;
 
   return (
-    <section className="py-24 px-6 w-full relative overflow-hidden bg-transparent transition-colors duration-500">
-      <div className="max-w-7xl mx-auto relative z-10">
-        <FadeIn>
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center rounded-full border border-accent-light/45 bg-slate-900/90 px-5 py-2 text-sm font-semibold text-accent-light mb-4 shadow-lg shadow-black/30">
-              💼 OUR WORK
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground-primary dark:text-white">
-              We don’t just deliver projects. <br/>
-              <span className="text-gradient">We remove problems.</span>
-            </h2>
-            <p className="text-lg text-slate-300 max-w-2xl mx-auto font-medium">
-              👉 Real results. Real impact.
-            </p>
-          </div>
-        </FadeIn>
+    <section className="py-[5rem] px-6 w-full bg-obsidian-canvas">
+      <div className="max-w-[1200px] mx-auto">
+        <SectionHeader
+          label="PORTFOLIO"
+          title="Work that replaced the manual way"
+          subtitle="Live systems we shipped — in production, solving real operational pain."
+        />
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-dark"></div>
+          <div className="flex justify-center items-center h-64 mt-16">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-silver"></div>
           </div>
         ) : (
-          <div className="w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+          <div className="w-full mt-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayedProjects.map((project, index) => (
-                <FadeIn key={project.id} delay={0.1 * index} direction="up" className="h-[450px]">
-                  <LiveProjectCard 
-                    title={project.title}
-                    description={project.description}
-                    url={project.url}
-                    tags={project.tags || []}
-                  />
+                <FadeIn key={project.id} delay={0.1 * index} direction="up">
+                  <div className="h-full">
+                    <LiveProjectCard
+                      title={project.title}
+                      description={project.description}
+                      url={project.url}
+                      tags={project.tags || []}
+                      imageUrl={project.imageUrl}
+                    />
+                  </div>
                 </FadeIn>
               ))}
             </div>
             
             {limit && projects.length > limit && (
               <div className="mt-16 text-center">
-                <a href="/work" className="inline-flex items-center gap-3 px-8 py-4 bg-accent-dark text-white font-bold rounded-full transition-all group hover:bg-white hover:text-accent-dark hover:scale-105 shadow-xl">
-                  View All Projects <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <a
+                  href="/work"
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 border border-silver bg-transparent text-frost-text text-[14px] font-aeonik font-bold uppercase tracking-[-0.011em] hover:bg-white/5 transition-colors"
+                >
+                  <span>VIEW ALL PROJECTS</span>
+                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </a>
               </div>
             )}
