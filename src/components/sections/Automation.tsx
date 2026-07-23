@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Stethoscope,
   HardHat,
@@ -184,6 +185,13 @@ export function Automation() {
   const [cur, setCur] = useState(0);
   const active = sectors[cur];
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCur((prev) => (prev + 1) % sectors.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [cur]);
+
   return (
     <section id="automation" className="scroll-mt-24 py-[5rem] w-full bg-obsidian-canvas">
       <div className="max-w-[1200px] mx-auto px-6">
@@ -218,56 +226,66 @@ export function Automation() {
           </div>
 
           {/* Detail panel */}
-          <div className="border-b border-r border-onyx-edge p-8 md:p-10">
-            <div className="flex items-center gap-3 mb-8">
-              <active.icon strokeWidth={1.5} className="w-6 h-6 text-amber-whisper" />
-              <h3 className="text-[23px] font-normal tracking-[-0.011em] text-frost-text">
-                {active.name}
-              </h3>
-            </div>
+          <div className="border-b border-r border-onyx-edge p-8 md:p-10 overflow-hidden relative">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={cur}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+              >
+                <div className="flex items-center gap-3 mb-8">
+                  <active.icon strokeWidth={1.5} className="w-6 h-6 text-amber-whisper" />
+                  <h3 className="text-[23px] font-normal tracking-[-0.011em] text-frost-text">
+                    {active.name}
+                  </h3>
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div>
-                <p className="font-input text-[11px] uppercase tracking-[-0.022em] text-graphite mb-4">
-                  The manual grind
-                </p>
-                <ul className="flex flex-col gap-3">
-                  {active.pains.map((p) => (
-                    <li key={p} className="flex gap-2.5 text-[14px] leading-[1.5] text-smoke">
-                      <span className="text-ash mt-0.5">—</span>
-                      <span>{p}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="font-input text-[11px] uppercase tracking-[-0.022em] text-graphite mb-4">
-                  What we automate
-                </p>
-                <ul className="flex flex-col gap-3">
-                  {active.solutions.map((x) => (
-                    <li key={x} className="flex gap-2.5 text-[14px] leading-[1.5] text-frost-text">
-                      <Check strokeWidth={1.5} className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-whisper" />
-                      <span>{x}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div>
+                    <p className="font-input text-[11px] uppercase tracking-[-0.022em] text-graphite mb-4">
+                      The manual grind
+                    </p>
+                    <ul className="flex flex-col gap-3">
+                      {active.pains.map((p) => (
+                        <li key={p} className="flex gap-2.5 text-[14px] leading-[1.5] text-smoke">
+                          <span className="text-ash mt-0.5">—</span>
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-input text-[11px] uppercase tracking-[-0.022em] text-graphite mb-4">
+                      What we automate
+                    </p>
+                    <ul className="flex flex-col gap-3">
+                      {active.solutions.map((x) => (
+                        <li key={x} className="flex gap-2.5 text-[14px] leading-[1.5] text-frost-text">
+                          <Check strokeWidth={1.5} className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-whisper" />
+                          <span>{x}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
 
-            <p className="font-input text-[11px] uppercase tracking-[-0.022em] text-graphite mb-3">
-              Tech stack
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {active.stack.map((t) => (
-                <span
-                  key={t}
-                  className="font-input text-[12px] text-silver border border-onyx-edge px-2.5 py-1"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
+                <p className="font-input text-[11px] uppercase tracking-[-0.022em] text-graphite mb-3">
+                  Tech stack
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {active.stack.map((t) => (
+                    <span
+                      key={t}
+                      className="font-input text-[12px] text-silver border border-onyx-edge px-2.5 py-1"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </div>

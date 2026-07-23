@@ -26,6 +26,10 @@ export const metadata: Metadata = {
   description: "We solve real business problems with custom digital systems, dynamic web applications, mobile apps, and beautiful websites built for measurable results.",
   keywords: [
     "triTechies",
+    "tri techies",
+    "tritechies",
+    "tritechies.com",
+    "tri techies software",
     "software engineering",
     "web development agency",
     "mobile app development",
@@ -84,6 +88,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("dark", "font-sans", geist.variable)} suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "triTechies",
+              "alternateName": ["tri techies", "tritechies", "triTechies Studio"],
+              "url": cleanSiteUrl,
+              "logo": `${cleanSiteUrl}/icon.png`,
+              "description": "We solve real business problems with custom digital systems, dynamic web applications, mobile apps, and beautiful websites built for measurable results."
+            })
+          }}
+        />
+      </head>
       <body className={cn(inter.variable, "antialiased overflow-hidden h-dvh flex flex-col bg-obsidian-canvas text-frost-text font-aeonik")}>
         <IOSScrollFix />
         <Navbar />

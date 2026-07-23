@@ -27,7 +27,7 @@ export function Hero() {
 
         <FadeIn delay={0.3}>
           <p className="text-[16px] md:text-[18px] text-smoke mb-6 max-w-[640px] mx-auto font-aeonik font-normal tracking-[-0.011em] leading-[1.5]">
-            We replace messy manual processes with fast, reliable digital systems that help your team work smarter and scale confidently.
+            triTechies replaces messy manual processes with fast, reliable digital systems that help your team work smarter and scale confidently.
           </p>
         </FadeIn>
 

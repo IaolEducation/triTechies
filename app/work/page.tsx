@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function WorkPage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-full bg-obsidian-canvas">
       <Work limit={null} />
     </div>
   );

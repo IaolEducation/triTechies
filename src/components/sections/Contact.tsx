@@ -40,7 +40,7 @@ export function Contact() {
   };
 
   return (
-    <section className="py-[5rem] px-6 w-full bg-obsidian-canvas flex flex-col items-center">
+    <section className="py-[5rem] px-6 w-full bg-obsidian-canvas flex flex-col items-center flex-1 justify-center">
       <div className="max-w-[1200px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div className="flex flex-col justify-center">
           <FadeIn>

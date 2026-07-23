@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Custom Software & Web App Development Studio",
-  description: "triTechies is a software engineering and development studio building result-driven custom platforms, web applications, mobile apps, and robust business systems.",
+  description: "triTechies (tri techies) is a software engineering and development studio building result-driven custom platforms, web applications, mobile apps, and robust business systems.",
   alternates: {
     canonical: "/",
   },
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="relative flex flex-col min-h-screen w-full bg-obsidian-canvas">
+    <div className="relative flex flex-col min-h-full w-full bg-obsidian-canvas">
       <Hero />
       <Services />
       <Automation />
