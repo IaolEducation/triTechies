@@ -4,14 +4,12 @@ import { useEffect } from "react";
 
 export function IOSScrollFix() {
   useEffect(() => {
-    // Detect iOS (iPhone, iPad, iPod) including iPadOS on Safari
-    const isIOS =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.userAgent.includes("Mac") && navigator.maxTouchPoints > 1);
-
-    if (isIOS) {
-      document.documentElement.classList.add("is-ios");
-    }
+    // Ensure the viewport meta is respected on iOS by forcing a repaint
+    // The safe-area-inset-top is handled via env() CSS and viewportFit=cover
+    document.documentElement.style.setProperty(
+      "--sat",
+      "env(safe-area-inset-top)"
+    );
   }, []);
 
   return null;

@@ -320,7 +320,10 @@ export default function AdminDashboard() {
 
   // SCRATCH REBUILD - No header bar, clean fluid masonry layout.
   return (
-    <div className="h-screen bg-[#101010] relative pt-8 pb-0 px-6 md:px-12 text-[#f5f5f7] flex flex-col overflow-hidden">
+    <div 
+      className="h-screen bg-[#101010] relative pb-0 px-6 md:px-12 text-[#f5f5f7] flex flex-col overflow-hidden"
+      style={{ paddingTop: "calc(env(safe-area-inset-top) + 2rem)" }}
+    >
       <div className="max-w-7xl w-full mx-auto relative z-10 flex-1 flex flex-col overflow-hidden">
         <div className="flex flex-row justify-between items-center mb-8 gap-4 bg-transparent md:bg-[#161616] p-0 md:p-6 rounded-none border-0 md:border border-[#212121] shadow-none md:shadow-xl">
           <div>

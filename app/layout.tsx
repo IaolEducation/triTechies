@@ -79,6 +79,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -104,10 +105,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={cn(inter.variable, "antialiased overflow-hidden h-dvh flex flex-col bg-obsidian-canvas text-frost-text font-aeonik")}>
+      <body className={cn(inter.variable, "antialiased min-h-dvh flex flex-col bg-obsidian-canvas text-frost-text font-aeonik")}>
         <IOSScrollFix />
         <Navbar />
-        <main className="flex-1 overflow-y-auto scroll-smooth overscroll-y-none">{children}</main>
+        <main className="flex-1">{children}</main>
         <FirstVisitPopup />
         <Script 
           src="https://app.ashna.ai/embed/agent-widget.js" 

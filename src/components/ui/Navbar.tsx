@@ -36,7 +36,10 @@ export function Navbar() {
         )}
       </AnimatePresence>
 
-      <header className="sticky top-0 z-50 w-full bg-obsidian-canvas/95 backdrop-blur-sm border-b border-onyx-edge">
+      <header 
+        className="sticky top-0 z-50 w-full bg-obsidian-canvas/95 backdrop-blur-sm border-b border-onyx-edge"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
         <div className="mx-auto max-w-[1200px]">
           <div className="px-6 py-4 flex items-center justify-between">
             {/* Left: Wordmark + divider + nav links */}
