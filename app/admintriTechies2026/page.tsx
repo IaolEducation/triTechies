@@ -1,15 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, getDoc, setDoc } from "firebase/firestore";
 import { onAuthStateChanged, signInWithPopup, User, signOut } from "firebase/auth";
 import { db, auth, googleProvider } from "@/lib/firebase";
-import { Mail, Phone, DollarSign, Clock, CheckCircle, LogOut, Plus, X, Upload, Pencil, Trash2, ShieldAlert } from "lucide-react";
+import { Mail, Phone, DollarSign, Clock, CheckCircle, LogOut, Plus, X, Upload, Pencil, Trash2, ShieldAlert, Shield } from "lucide-react";
 import { uploadImageAction } from "./actions";
 
 export default function AdminDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [isAdminUser, setIsAdminUser] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [checkingAccess, setCheckingAccess] = useState(true);
+
+  const [activeTab, setActiveTab] = useState<"pipeline" | "cms" | "access">("pipeline");
+  const [admins, setAdmins] = useState<any[]>([]);
+  const [newAdminEmail, setNewAdminEmail] = useState("");
+  const [addingAdmin, setAddingAdmin] = useState(false);
 
   const [leads, setLeads] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
@@ -37,12 +45,57 @@ export default function AdminDashboard() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setAuthLoading(false);
+      if (!currentUser) {
+        setIsAdminUser(false);
+        setIsSuperAdmin(false);
+        setCheckingAccess(false);
+      }
     });
     return () => unsubscribe();
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setIsAdminUser(false);
+      setIsSuperAdmin(false);
+      setCheckingAccess(false);
+      return;
+    }
+
+    const verifyAccess = async () => {
+      setCheckingAccess(true);
+      const email = user.email || "";
+      if (email === "techiestri@gmail.com") {
+        setIsAdminUser(true);
+        setIsSuperAdmin(true);
+        setCheckingAccess(false);
+        return;
+      }
+
+      try {
+        const docRef = doc(db, "admins", email);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setIsAdminUser(true);
+          setIsSuperAdmin(false);
+        } else {
+          setIsAdminUser(false);
+          setIsSuperAdmin(false);
+        }
+      } catch (e) {
+        console.error("Error checking admin whitelist:", e);
+        setIsAdminUser(false);
+        setIsSuperAdmin(false);
+      } finally {
+        setCheckingAccess(false);
+      }
+    };
+
+    verifyAccess();
+  }, [user]);
+
+  useEffect(() => {
+    if (!user || !isAdminUser) return;
 
     const unsubContacts = onSnapshot(query(collection(db, "contacts"), orderBy("createdAt", "desc")), snap => {
       setLeads(snap.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -57,8 +110,20 @@ export default function AdminDashboard() {
       setTeam(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     }, err => handleFireError(err));
 
-    return () => { unsubContacts(); unsubProjects(); unsubTeam(); };
-  }, [user]);
+    let unsubAdmins = () => {};
+    if (isSuperAdmin) {
+      unsubAdmins = onSnapshot(collection(db, "admins"), snap => {
+        setAdmins(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      }, err => handleFireError(err));
+    }
+
+    return () => { 
+      unsubContacts(); 
+      unsubProjects(); 
+      unsubTeam();
+      unsubAdmins();
+    };
+  }, [user, isAdminUser, isSuperAdmin]);
 
   const handleLogin = async () => {
     try { await signInWithPopup(auth, googleProvider); }
@@ -167,7 +232,41 @@ export default function AdminDashboard() {
     catch (e: any) { alert(e.message); }
   };
 
-  if (authLoading) return <div className="absolute inset-0 bg-[#0b1120] flex items-center justify-center text-white">Loading Auth...</div>;
+  // -------------------------
+  // ADMIN WHITELIST OPERATIONS
+  // -------------------------
+  const handleAddAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAdminEmail.trim()) return;
+    setAddingAdmin(true);
+    try {
+      const email = newAdminEmail.trim().toLowerCase();
+      await setDoc(doc(db, "admins", email), {
+        email,
+        addedBy: user?.email,
+        createdAt: serverTimestamp()
+      });
+      setNewAdminEmail("");
+    } catch (err: any) {
+      alert("Failed to add admin: " + err.message);
+    } finally {
+      setAddingAdmin(false);
+    }
+  };
+
+  const handleDeleteAdmin = async (email: string) => {
+    if (email === "techiestri@gmail.com") return;
+    if (!window.confirm(`Permanently revoke admin access for: ${email}?`)) return;
+    try {
+      await deleteDoc(doc(db, "admins", email));
+    } catch (e: any) {
+      alert("Failed to revoke access: " + e.message);
+    }
+  };
+
+  if (authLoading || (user && checkingAccess)) {
+    return <div className="absolute inset-0 bg-[#0b1120] flex items-center justify-center text-white">Loading Auth...</div>;
+  }
 
   if (!user) {
     return (
@@ -187,13 +286,36 @@ export default function AdminDashboard() {
     );
   }
 
+  if (!isAdminUser) {
+    return (
+      <div className="absolute inset-0 -mt-20 min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-[#0b1120] to-[#0f172a] z-50">
+        <div className="max-w-md w-full bg-[#05070f] border border-white/10 p-10 rounded-3xl shadow-2xl flex flex-col items-center text-center relative overflow-hidden">
+          <div className="absolute top-0 right-[-10%] w-[20vw] h-[20vw] rounded-full bg-red-500 blur-[80px] opacity-10 pointer-events-none" />
+          <div className="w-20 h-20 bg-red-950/20 border border-red-900/30 rounded-3xl flex items-center justify-center mb-8">
+            <ShieldAlert className="w-10 h-10 text-red-500" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-3">Access Denied</h1>
+          <p className="text-slate-400 mb-6 font-medium text-sm leading-relaxed px-4">
+            Your account <strong>{user.email}</strong> is not whitelisted to access the admin console.
+          </p>
+          <p className="text-slate-500 mb-10 text-xs leading-relaxed px-4">
+            Contact the super admin at <strong>techiestri@gmail.com</strong> to request permissions.
+          </p>
+          <button onClick={handleLogout} className="w-full flex items-center justify-center gap-3 rounded-2xl bg-red-950/20 border border-red-900/30 text-red-400 hover:bg-red-500 hover:text-white px-8 py-4 font-bold transition-all shadow-xl hover:scale-[1.02]">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // SCRATCH REBUILD - No header bar, clean fluid masonry layout.
   return (
     <div className="-mt-20 min-h-screen bg-[#05070f] relative pt-32 pb-24 px-6 md:px-12">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_80%,rgba(139,92,246,0.16),transparent_35%),radial-gradient(circle_at_28%_20%,rgba(59,130,246,0.14),transparent_34%)]" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6 bg-[#05070f]/95 p-6 rounded-3xl border border-white/10 backdrop-blur-xl shadow-xl">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-6 bg-[#05070f]/95 p-6 rounded-3xl border border-white/10 backdrop-blur-xl shadow-xl">
           <div>
             <h1 className="text-3xl font-black text-white tracking-tight mb-1">Command Center</h1>
             <p className="text-slate-500 text-sm font-medium">Real-time CMS and Operations grid.</p>
@@ -219,130 +341,254 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-          <div className="xl:col-span-4 flex flex-col gap-8">
-            <div className="bg-[#05070f]/95 border border-white/10 rounded-3xl p-6 backdrop-blur-xl shadow-xl">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-accent-light" /> Live Projects
-                </h2>
-                <button onClick={openProjectAdd} className="bg-white hover:bg-slate-200 text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow flex items-center gap-1">
-                  <Plus className="w-3 h-3" /> New
-                </button>
-              </div>
+        {/* Navigation Tabs */}
+        <div className="flex gap-2 mb-8 bg-[#05070f]/50 p-1.5 rounded-2xl border border-white/10 max-w-md">
+          <button
+            onClick={() => setActiveTab("pipeline")}
+            className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+              activeTab === "pipeline"
+                ? "bg-white text-slate-900 shadow-md"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Inquiries
+          </button>
+          <button
+            onClick={() => setActiveTab("cms")}
+            className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+              activeTab === "cms"
+                ? "bg-white text-slate-900 shadow-md"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            CMS
+          </button>
+          {isSuperAdmin && (
+            <button
+              onClick={() => setActiveTab("access")}
+              className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                activeTab === "access"
+                  ? "bg-white text-slate-900 shadow-md"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Access
+            </button>
+          )}
+        </div>
 
-              <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                {projects.length === 0 && <p className="text-slate-500 text-sm text-center py-8">No active projects.</p>}
-                {projects.map(p => (
-                  <div key={p.id} className="group bg-slate-900/60 border border-white/10 rounded-2xl p-4 transition-all hover:border-accent-light/50 hover:bg-slate-900 shadow-lg">
-                    <h3 className="font-bold text-white text-sm mb-1 line-clamp-1">{p.title}</h3>
-                    <p className="text-xs text-accent-light truncate mb-3 opacity-80">{p.url}</p>
-                    {p.description && (
-                      <p className="text-xs text-slate-400 line-clamp-2 mb-4 leading-relaxed">{p.description}</p>
-                    )}
-                    <div className="flex gap-2 justify-end">
-                      <button onClick={() => openProjectEdit(p)} className="p-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition" title="Edit"><Pencil className="w-3 h-3" /></button>
-                      <button onClick={() => handleDeleteProject(p.id, p.title)} className="p-2 bg-red-950/40 text-red-400 rounded-lg hover:bg-red-900 transition" title="Delete"><Trash2 className="w-3 h-3" /></button>
+        {/* Tab content 1: Pipeline */}
+        {activeTab === "pipeline" && (
+          <div className="bg-[#05070f]/95 border border-white/10 rounded-3xl p-6 md:p-10 backdrop-blur-xl shadow-xl">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+              <h2 className="text-2xl font-black text-white flex items-center gap-3">
+                Client Inquiries Pipeline
+                <span className="bg-accent-dark text-white px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase">
+                  {leads.length} Active
+                </span>
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6">
+              {leads.length === 0 ? (
+                <div className="py-24 text-center text-slate-500 font-bold bg-slate-900/60 rounded-3xl border border-white/10 border-dashed text-sm flex flex-col items-center gap-4">
+                  <Mail className="w-10 h-10 opacity-20" /> No incoming inquiries at the moment.
+                </div>
+              ) : (
+                leads.map(lead => (
+                  <div key={lead.id} className="bg-slate-900/65 p-6 md:p-8 rounded-3xl border border-white/10 flex flex-col gap-6 relative overflow-hidden group hover:border-accent-light/40 transition-colors">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4 z-10 relative">
+                      <div>
+                        <h3 className="font-black text-2xl text-white mb-2">{lead.name}</h3>
+                        <div className="flex flex-wrap gap-4">
+                          <a href={`mailto:${lead.email}`} className="text-accent-light text-sm flex items-center gap-1.5 hover:underline font-medium"><Mail className="w-4 h-4 opacity-50" /> {lead.email}</a>
+                          <a href={`tel:${lead.phone}`} className="text-accent-light text-sm flex items-center gap-1.5 hover:underline font-medium"><Phone className="w-4 h-4 opacity-50" /> {lead.phone}</a>
+                        </div>
+                      </div>
+                      <div className={`px-4 py-1.5 text-xs font-bold rounded-lg border uppercase tracking-widest ${lead.status === "PROCESSED" ? "bg-slate-800 text-slate-400 border-slate-700" : "bg-green-500/10 text-green-400 border-green-500/20"}`}>
+                        {lead.status || "NEW"}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 border-y border-white/10 z-10 relative">
+                      <div className="flex items-center gap-3 text-sm text-slate-300 font-bold bg-slate-900/70 p-4 rounded-2xl border border-white/10">
+                        <DollarSign className="w-5 h-5 text-emerald-400" /> {lead.budget}
+                      </div>
+                      <div className="flex items-center gap-3 text-sm text-slate-300 font-bold bg-slate-900/70 p-4 rounded-2xl border border-white/10">
+                        <Clock className="w-5 h-5 text-orange-400" /> {lead.timeline}
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900/70 p-6 rounded-2xl border border-white/10 z-10 relative">
+                      <div className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest">Project Specification</div>
+                      <p className="text-slate-300 text-sm whitespace-pre-wrap leading-relaxed">{lead.description}</p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2 z-10 relative">
+                      <button onClick={() => deleteLead(lead.id, lead.name)} className="px-5 py-3 bg-slate-900 text-red-400 hover:bg-red-500 hover:text-white text-sm font-bold rounded-xl transition-all border border-slate-800 flex items-center justify-center gap-2">
+                        <Trash2 className="w-4 h-4" /> Delete Log
+                      </button>
+                      {lead.status !== "PROCESSED" && (
+                        <button onClick={() => markProcessed(lead.id)} className="px-5 py-3 bg-accent-dark text-white hover:bg-accent-light hover:text-slate-900 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg">
+                          <CheckCircle className="w-4 h-4" /> Mark as Processed
+                        </button>
+                      )}
                     </div>
                   </div>
-                ))}
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tab content 2: CMS */}
+        {activeTab === "cms" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-5 flex flex-col gap-8">
+              <div className="bg-[#05070f]/95 border border-white/10 rounded-3xl p-6 backdrop-blur-xl shadow-xl">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-accent-light" /> Live Projects
+                  </h2>
+                  <button onClick={openProjectAdd} className="bg-white hover:bg-slate-200 text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow flex items-center gap-1">
+                    <Plus className="w-3 h-3" /> New
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-3 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
+                  {projects.length === 0 && <p className="text-slate-500 text-sm text-center py-8">No active projects.</p>}
+                  {projects.map(p => (
+                    <div key={p.id} className="group bg-slate-900/60 border border-white/10 rounded-2xl p-4 transition-all hover:border-accent-light/50 hover:bg-slate-900 shadow-lg">
+                      <h3 className="font-bold text-white text-sm mb-1 line-clamp-1">{p.title}</h3>
+                      <p className="text-xs text-accent-light truncate mb-3 opacity-80">{p.url}</p>
+                      {p.description && (
+                        <p className="text-xs text-slate-400 line-clamp-2 mb-4 leading-relaxed">{p.description}</p>
+                      )}
+                      <div className="flex gap-2 justify-end">
+                        <button onClick={() => openProjectEdit(p)} className="p-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition" title="Edit"><Pencil className="w-3 h-3" /></button>
+                        <button onClick={() => handleDeleteProject(p.id, p.title)} className="p-2 bg-red-950/40 text-red-400 rounded-lg hover:bg-red-900 transition" title="Delete"><Trash2 className="w-3 h-3" /></button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-[#05070f]/95 border border-white/10 rounded-3xl p-6 backdrop-blur-xl shadow-xl">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-brand-200" /> Team Roster
+                  </h2>
+                  <button onClick={openTeamAdd} className="bg-white hover:bg-slate-200 text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow flex items-center gap-1">
+                    <Plus className="w-3 h-3" /> New
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                  {team.length === 0 && <p className="text-slate-500 text-sm text-center py-8">No team members.</p>}
+                  {team.map(t => (
+                    <div key={t.id} className="group bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex justify-between items-center transition-all hover:border-accent-light/40 hover:bg-slate-900">
+                      <div className="flex items-center gap-3">
+                        <img src={t.imageUrl} alt={t.name} className="w-10 h-10 rounded-full border border-slate-700 object-cover" />
+                        <div>
+                          <h3 className="font-bold text-white text-sm line-clamp-1">{t.name}</h3>
+                          <p className="text-xs text-slate-400">{t.role}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => openTeamEdit(t)} className="p-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition" title="Edit"><Pencil className="w-3 h-3" /></button>
+                        <button onClick={() => handleDeleteTeam(t.id, t.name)} className="p-2 bg-red-950/40 text-red-400 rounded-lg hover:bg-red-900 transition" title="Delete"><Trash2 className="w-3 h-3" /></button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="bg-[#05070f]/95 border border-white/10 rounded-3xl p-6 backdrop-blur-xl shadow-xl">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-brand-200" /> Team Roster
-                </h2>
-                <button onClick={openTeamAdd} className="bg-white hover:bg-slate-200 text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow flex items-center gap-1">
-                  <Plus className="w-3 h-3" /> New
-                </button>
-              </div>
-
-              <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                {team.length === 0 && <p className="text-slate-500 text-sm text-center py-8">No team members.</p>}
-                {team.map(t => (
-                  <div key={t.id} className="group bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex justify-between items-center transition-all hover:border-accent-light/40 hover:bg-slate-900">
-                    <div className="flex items-center gap-3">
-                      <img src={t.imageUrl} alt={t.name} className="w-10 h-10 rounded-full border border-slate-700 object-cover" />
-                      <div>
-                        <h3 className="font-bold text-white text-sm line-clamp-1">{t.name}</h3>
-                        <p className="text-xs text-slate-400">{t.role}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => openTeamEdit(t)} className="p-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition" title="Edit"><Pencil className="w-3 h-3" /></button>
-                      <button onClick={() => handleDeleteTeam(t.id, t.name)} className="p-2 bg-red-950/40 text-red-400 rounded-lg hover:bg-red-900 transition" title="Delete"><Trash2 className="w-3 h-3" /></button>
-                    </div>
-                  </div>
-                ))}
+            <div className="lg:col-span-7">
+              <div className="bg-[#05070f]/95 border border-white/10 rounded-3xl p-6 md:p-10 backdrop-blur-xl min-h-[400px] shadow-xl flex flex-col justify-center items-center text-center">
+                <Shield className="w-12 h-12 text-slate-600 mb-4 opacity-40" />
+                <h3 className="text-lg font-bold text-white mb-2">CMS Management Panel</h3>
+                <p className="text-slate-400 text-sm max-w-sm">Use the left lists to publish and update live projects and your team roster page content.</p>
               </div>
             </div>
           </div>
+        )}
 
-          <div className="xl:col-span-8">
-            <div className="bg-[#05070f]/95 border border-white/10 rounded-3xl p-6 md:p-10 backdrop-blur-xl min-h-full shadow-xl">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-                <h2 className="text-2xl font-black text-white flex items-center gap-3">
-                  Client Inquiries Pipeline
-                  <span className="bg-accent-dark text-white px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase">
-                    {leads.length} Active
-                  </span>
-                </h2>
+        {/* Tab content 3: Access Control (Super Admin Only) */}
+        {activeTab === "access" && isSuperAdmin && (
+          <div className="bg-[#05070f]/95 border border-white/10 rounded-3xl p-6 md:p-10 backdrop-blur-xl shadow-xl max-w-3xl mx-auto">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
+                <Shield className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-black text-white">Access Control</h2>
+                <p className="text-slate-500 text-sm font-medium">Manage whitelisted administrator permissions.</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleAddAdmin} className="flex flex-col sm:flex-row gap-3 mb-8 bg-slate-900/40 p-4 rounded-2xl border border-white/10">
+              <input
+                required
+                type="email"
+                value={newAdminEmail}
+                onChange={(e) => setNewAdminEmail(e.target.value)}
+                placeholder="user@gmail.com"
+                className="flex-1 bg-slate-900/70 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-accent-light text-sm"
+              />
+              <button
+                type="submit"
+                disabled={addingAdmin}
+                className="bg-white hover:bg-slate-200 text-slate-900 px-6 py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                <Plus className="w-4 h-4" /> {addingAdmin ? "Whitelisting..." : "Grant Access"}
+              </button>
+            </form>
+
+            <div className="flex flex-col gap-3">
+              <div className="text-xs font-bold text-slate-500 uppercase tracking-widest px-1 mb-1">Whitelisted Users</div>
+              
+              <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-amber-500/15 text-amber-500 flex items-center justify-center font-bold text-xs">SA</div>
+                  <div>
+                    <p className="text-sm font-bold text-white">techiestri@gmail.com</p>
+                    <p className="text-xs text-amber-500/80 font-medium">System Super Administrator</p>
+                  </div>
+                </div>
+                <span className="text-[10px] uppercase font-bold tracking-widest bg-amber-500/10 border border-amber-500/20 text-amber-500 px-2.5 py-1 rounded">Owner</span>
               </div>
 
-              <div className="grid grid-cols-1 gap-6">
-                {leads.length === 0 ? (
-                  <div className="py-24 text-center text-slate-500 font-bold bg-slate-900/60 rounded-3xl border border-white/10 border-dashed text-sm flex flex-col items-center gap-4">
-                    <Mail className="w-10 h-10 opacity-20" /> No incoming inquiries at the moment.
-                  </div>
-                ) : (
-                  leads.map(lead => (
-                    <div key={lead.id} className="bg-slate-900/65 p-6 md:p-8 rounded-3xl border border-white/10 flex flex-col gap-6 relative overflow-hidden group hover:border-accent-light/40 transition-colors">
-                      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 z-10 relative">
-                        <div>
-                          <h3 className="font-black text-2xl text-white mb-2">{lead.name}</h3>
-                          <div className="flex flex-wrap gap-4">
-                            <a href={`mailto:${lead.email}`} className="text-accent-light text-sm flex items-center gap-1.5 hover:underline font-medium"><Mail className="w-4 h-4 opacity-50" /> {lead.email}</a>
-                            <a href={`tel:${lead.phone}`} className="text-accent-light text-sm flex items-center gap-1.5 hover:underline font-medium"><Phone className="w-4 h-4 opacity-50" /> {lead.phone}</a>
-                          </div>
-                        </div>
-                        <div className={`px-4 py-1.5 text-xs font-bold rounded-lg border uppercase tracking-widest ${lead.status === "PROCESSED" ? "bg-slate-800 text-slate-400 border-slate-700" : "bg-green-500/10 text-green-400 border-green-500/20"}`}>
-                          {lead.status || "NEW"}
-                        </div>
-                      </div>
+              {admins.filter(a => a.email !== "techiestri@gmail.com").length === 0 && (
+                <p className="text-slate-500 text-sm text-center py-6">No additional whitelisted admins.</p>
+              )}
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 border-y border-white/10 z-10 relative">
-                        <div className="flex items-center gap-3 text-sm text-slate-300 font-bold bg-slate-900/70 p-4 rounded-2xl border border-white/10">
-                          <DollarSign className="w-5 h-5 text-emerald-400" /> {lead.budget}
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-slate-300 font-bold bg-slate-900/70 p-4 rounded-2xl border border-white/10">
-                          <Clock className="w-5 h-5 text-orange-400" /> {lead.timeline}
-                        </div>
-                      </div>
-
-                      <div className="bg-slate-900/70 p-6 rounded-2xl border border-white/10 z-10 relative">
-                        <div className="text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest">Project Specification</div>
-                        <p className="text-slate-300 text-sm whitespace-pre-wrap leading-relaxed">{lead.description}</p>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2 z-10 relative">
-                        <button onClick={() => deleteLead(lead.id, lead.name)} className="px-5 py-3 bg-slate-900 text-red-400 hover:bg-red-500 hover:text-white text-sm font-bold rounded-xl transition-all border border-slate-800 flex items-center justify-center gap-2">
-                          <Trash2 className="w-4 h-4" /> Delete Log
-                        </button>
-                        {lead.status !== "PROCESSED" && (
-                          <button onClick={() => markProcessed(lead.id)} className="px-5 py-3 bg-accent-dark text-white hover:bg-accent-light hover:text-slate-900 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg">
-                            <CheckCircle className="w-4 h-4" /> Mark as Processed
-                          </button>
+              {admins
+                .filter(a => a.email !== "techiestri@gmail.com")
+                .map(admin => (
+                  <div key={admin.id} className="bg-slate-900/40 border border-white/10 rounded-2xl p-4 flex justify-between items-center hover:border-white/20 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs">AD</div>
+                      <div>
+                        <p className="text-sm font-bold text-white">{admin.email}</p>
+                        {admin.addedBy && (
+                          <p className="text-[10px] text-slate-500 mt-0.5">Added by {admin.addedBy}</p>
                         )}
                       </div>
                     </div>
-                  ))
-                )}
-              </div>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteAdmin(admin.email)}
+                      className="p-2 bg-red-950/40 text-red-400 rounded-xl hover:bg-red-900 hover:text-white transition-colors"
+                      title="Revoke Permission"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {showProjectModal && (
