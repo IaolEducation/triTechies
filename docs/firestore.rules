@@ -48,6 +48,14 @@ service cloud.firestore {
       allow read, write: if isSuperAdmin();
     }
     
+    // Site Config Collection (spots availability, month, etc.)
+    match /siteConfig/{document=**} {
+      // Anyone can read for the public hero badge
+      allow read: if true;
+      // Only authenticated admins can modify
+      allow write: if isAdmin();
+    }
+
     // Default catch-all rule: Deny access to anything not explicitly allowed above
     match /{document=**} {
       allow read, write: if false;

@@ -4,8 +4,55 @@ import { FadeIn } from "@/components/animations/FadeIn";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+interface SiteAvailability {
+  spotsTaken: number;
+  spotsTotal: number;
+  month: string;
+  visible: boolean;
+}
+
+const DEFAULT_AVAILABILITY: SiteAvailability = {
+  spotsTaken: 3,
+  spotsTotal: 5,
+  month: "JULY",
+  visible: true,
+};
 
 export function Hero() {
+  const [availability, setAvailability] = useState<SiteAvailability | null>(null);
+
+  useEffect(() => {
+    const unsub = onSnapshot(
+      doc(db, "siteConfig", "availability"),
+      (snap) => {
+        if (snap.exists()) {
+          setAvailability(snap.data() as SiteAvailability);
+        } else {
+          setAvailability(DEFAULT_AVAILABILITY);
+        }
+      },
+      () => {
+        setAvailability(DEFAULT_AVAILABILITY);
+      }
+    );
+    return () => unsub();
+  }, []);
+
+  const spotsLeft =
+    availability
+      ? availability.spotsTotal - availability.spotsTaken
+      : DEFAULT_AVAILABILITY.spotsTotal - DEFAULT_AVAILABILITY.spotsTaken;
+
+  const month =
+    availability?.month ?? DEFAULT_AVAILABILITY.month;
+
+  const showBadge =
+    availability !== null ? availability.visible !== false : true;
+
   return (
     <section className="relative w-full flex flex-col items-center justify-center pt-20 pb-10 overflow-hidden bg-obsidian-canvas">
       <div className="relative z-10 max-w-[900px] w-full mx-auto px-6 text-center flex flex-col items-center">
@@ -13,7 +60,9 @@ export function Hero() {
           <div className="flex items-center gap-2 mb-[3em]">
             <span className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
             <span className="text-[13px] font-aeonik font-normal text-frost-text tracking-[-0.011em]">
-              3/5 SPOTS LEFT FOR JULY
+              {showBadge
+                ? `${spotsLeft}/${availability?.spotsTotal ?? DEFAULT_AVAILABILITY.spotsTotal} SPOTS LEFT FOR ${month}`
+                : "NOW ACCEPTING NEW CLIENTS"}
             </span>
           </div>
         </FadeIn>
